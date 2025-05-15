@@ -1,9 +1,11 @@
-
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getMantraStats, updateMantraCount } from "@/lib/mantra-storage";
 import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import { Award } from "lucide-react";
+import { updateMilestoneProgress } from "@/lib/spiritual-journey";
 
 interface MantraCounterProps {
   autoIncrement?: boolean;
@@ -22,7 +24,7 @@ export function MantraCounter({
   const [mantraStats, setMantraStats] = useState(getMantraStats());
   const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
   const counterRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
   
   // Update stats on component mount
   useEffect(() => {
@@ -43,14 +45,14 @@ export function MantraCounter({
         console.error("Could not play completion sound");
       }
       
-      toast({
+      uiToast({
         title: "Practice Complete",
         description: `You've completed ${target} mantras!`,
       });
       
       onComplete?.();
     }
-  }, [count, target, onComplete, toast]);
+  }, [count, target, onComplete, uiToast]);
 
   // Vibration effect on increment
   const vibrateOnIncrement = () => {
@@ -94,9 +96,32 @@ export function MantraCounter({
       addRipple(50, 50);
     }
     
+    // Check for milestone achievements
+    const { newlyAchieved } = updateMilestoneProgress({
+      totalCount: newStats.totalCount,
+      streak: newStats.streak,
+      practiceDays: newStats.practiceDays
+    });
+    
+    // Show milestone notifications
+    if (newlyAchieved.length > 0) {
+      const milestone = newlyAchieved[0]; // Show the first new milestone
+      toast((
+        <div className="flex items-start gap-3">
+          <Award className="h-6 w-6 text-spiritual-gold flex-shrink-0" />
+          <div>
+            <h3 className="font-medium">New Milestone Achieved</h3>
+            <p className="text-sm text-muted-foreground">{milestone.title}: {milestone.description}</p>
+          </div>
+        </div>
+      ), {
+        duration: 5000
+      });
+    }
+    
     // Show milestone notifications
     if ([27, 54, 81, 108, 1008].includes(count + 1)) {
-      toast({
+      uiToast({
         title: "Milestone reached",
         description: `${count + 1} mantras completed!`,
       });

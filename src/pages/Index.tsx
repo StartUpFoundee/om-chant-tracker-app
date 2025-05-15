@@ -8,10 +8,13 @@ import { Mic } from "lucide-react";
 import { AdContainer } from "@/components/AdContainer";
 import { useEffect, useState } from "react";
 import { getMantraStats, getDailyContent } from "@/lib/mantra-storage";
+import { MilestoneBanner } from "@/components/MilestoneBanner";
+import { MilestoneModal } from "@/components/MilestoneModal";
 
 const Index = () => {
   const [stats, setStats] = useState(getMantraStats());
   const [dailyContent, setDailyContent] = useState(getDailyContent());
+  const [showMilestones, setShowMilestones] = useState(false);
   
   // Update stats on mount
   useEffect(() => {
@@ -34,7 +37,7 @@ const Index = () => {
         </header>
         
         {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="bg-card rounded-lg p-4 shadow-sm text-center">
             <div className="text-2xl font-bold text-spiritual-gold">{stats.todayCount}</div>
             <div className="text-xs text-muted-foreground">Today</div>
@@ -48,6 +51,12 @@ const Index = () => {
             <div className="text-xs text-muted-foreground">Day Streak</div>
           </div>
         </div>
+        
+        {/* Milestone Banner */}
+        <MilestoneBanner 
+          className="mb-6" 
+          onMilestoneClick={() => setShowMilestones(true)} 
+        />
         
         <AdContainer position="middle" />
         
@@ -119,6 +128,11 @@ const Index = () => {
         
         <AdContainer position="bottom" />
       </div>
+      
+      <MilestoneModal 
+        open={showMilestones}
+        onOpenChange={setShowMilestones}
+      />
       
       <NavBar />
     </div>

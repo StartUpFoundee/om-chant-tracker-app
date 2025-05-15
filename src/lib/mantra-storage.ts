@@ -4,6 +4,7 @@ export interface MantraStats {
   streak: number;
   lastChantDate: string;
   achievements: string[];
+  practiceDays?: number; // Total days of practice
 }
 
 export interface DailyRecord {
@@ -24,7 +25,8 @@ const initStats = (): MantraStats => {
     totalCount: 0,
     streak: 0,
     lastChantDate: getTodayDateString(),
-    achievements: []
+    achievements: [],
+    practiceDays: 0
   };
 };
 
@@ -62,8 +64,18 @@ export const getMantraStats = (): MantraStats => {
     localStorage.setItem('mantraStats', JSON.stringify(parsedStats));
   }
   
+  // Calculate practice days if not present
+  if (parsedStats.practiceDays === undefined) {
+    const dailyRecords = getDailyRecords();
+    parsedStats.practiceDays = dailyRecords.length;
+    localStorage.setItem('mantraStats', JSON.stringify(parsedStats));
+  }
+  
   return parsedStats;
 };
+
+// Import the milestone functions
+import { updateMilestoneProgress } from './spiritual-journey';
 
 // Update mantra count
 export const updateMantraCount = (count: number = 1): MantraStats => {
@@ -90,6 +102,9 @@ export const updateMantraCount = (count: number = 1): MantraStats => {
       date: today,
       count: count
     });
+    
+    // Increment practice days when we have a new day
+    stats.practiceDays = (stats.practiceDays || 0) + 1;
   }
   
   // Only keep records for the last 30 days
@@ -101,7 +116,14 @@ export const updateMantraCount = (count: number = 1): MantraStats => {
   localStorage.setItem('mantraStats', JSON.stringify(stats));
   
   // Check for achievements
-  checkAchievements(stats);
+  const achievements = checkAchievements(stats);
+  
+  // Update milestone progress
+  updateMilestoneProgress({
+    totalCount: stats.totalCount,
+    streak: stats.streak,
+    practiceDays: stats.practiceDays
+  });
   
   return stats;
 };
