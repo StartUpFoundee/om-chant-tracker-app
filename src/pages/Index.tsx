@@ -11,17 +11,24 @@ import { getMantraStats, getDailyContent } from "@/lib/mantra-storage";
 import { MilestoneBanner } from "@/components/MilestoneBanner";
 import { MilestoneModal } from "@/components/MilestoneModal";
 import { DailyChallenge } from "@/components/DailyChallenge";
+import { getUserIdentity, hasUserIdentity, spiritualSymbols } from "@/lib/user-identity";
 
 const Index = () => {
   const [stats, setStats] = useState(getMantraStats());
   const [dailyContent, setDailyContent] = useState(getDailyContent());
   const [showMilestones, setShowMilestones] = useState(false);
+  const [userIdentity, setUserIdentity] = useState(getUserIdentity());
   
   // Update stats on mount
   useEffect(() => {
     setStats(getMantraStats());
     setDailyContent(getDailyContent());
+    setUserIdentity(getUserIdentity());
   }, []);
+
+  const userSymbol = userIdentity ? 
+    spiritualSymbols.find(s => s.id === userIdentity.symbolId)?.symbol || "ॐ" :
+    "ॐ";
 
   return (
     <div className="min-h-screen pb-20 pt-4">
@@ -31,10 +38,24 @@ const Index = () => {
         {/* Header with Om Symbol */}
         <header className="flex flex-col items-center justify-center mt-8 mb-6">
           <OmAnimation size="lg" withParticles={true} />
-          <h1 className="text-3xl font-bold mt-2 text-center">ॐ नाम जप ॐ</h1>
-          <p className="text-center text-muted-foreground mt-2 px-6">
-            The repetition of divine names brings tranquility to the troubled mind
-          </p>
+          
+          {userIdentity ? (
+            <>
+              <h1 className="text-3xl font-bold mt-2 text-center">
+                {userSymbol} {userIdentity.spiritualName} {userSymbol}
+              </h1>
+              <Link to="/profile" className="text-center text-muted-foreground mt-2 px-6 hover:underline">
+                Tap to view your spiritual profile
+              </Link>
+            </>
+          ) : (
+            <>
+              <h1 className="text-3xl font-bold mt-2 text-center">ॐ नाम जप ॐ</h1>
+              <Link to="/welcome" className="text-center text-muted-foreground mt-2 px-6 hover:underline">
+                Create your spiritual identity
+              </Link>
+            </>
+          )}
         </header>
         
         {/* Quick Stats */}

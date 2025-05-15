@@ -11,11 +11,16 @@ import { useTheme } from "@/components/theme-provider";
 import { getSettings, updateSettings } from "@/lib/mantra-storage";
 import { useToast } from "@/hooks/use-toast";
 import { AdContainer } from "@/components/AdContainer";
+import { hasUserIdentity } from "@/lib/user-identity";
+import { User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [settings, setSettings] = useState(getSettings());
+  const navigate = useNavigate();
+  const hasIdentity = hasUserIdentity();
   
   const handleSettingChange = (key: string, value: any) => {
     const newSettings = {
@@ -72,6 +77,40 @@ const Settings = () => {
         </h1>
         
         <AdContainer position="top" />
+        
+        {/* Spiritual Identity Card */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">Spiritual Identity</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {hasIdentity ? (
+              <Button 
+                onClick={() => navigate("/profile")}
+                className="w-full"
+                variant="outline"
+              >
+                <User className="mr-2 h-4 w-4" />
+                Manage Your Spiritual Identity
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => navigate("/welcome")}
+                className="w-full"
+                variant="default"
+              >
+                <User className="mr-2 h-4 w-4" />
+                Create Your Spiritual Identity
+              </Button>
+            )}
+            
+            <p className="text-xs text-muted-foreground">
+              {hasIdentity 
+                ? "View and manage your spiritual identity, export your journey, or reset your profile."
+                : "Create a unique spiritual identity to save your progress and use across devices."}
+            </p>
+          </CardContent>
+        </Card>
         
         {/* Appearance Settings */}
         <Card className="mb-6">

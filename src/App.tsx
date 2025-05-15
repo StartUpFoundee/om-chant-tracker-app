@@ -10,6 +10,8 @@ import Audio from "./pages/Audio";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Challenges from "./pages/Challenges";
+import Profile from "./pages/Profile";
+import WelcomeFlow from "./components/welcome/WelcomeFlow";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./components/theme-provider";
 
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/challenges" element={<Challenges />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/welcome" element={<WelcomeFlow />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
