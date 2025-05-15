@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { getMantraStats, getDailyContent } from "@/lib/mantra-storage";
 import { MilestoneBanner } from "@/components/MilestoneBanner";
 import { MilestoneModal } from "@/components/MilestoneModal";
+import { DailyChallenge } from "@/components/DailyChallenge";
 
 const Index = () => {
   const [stats, setStats] = useState(getMantraStats());
@@ -51,6 +52,9 @@ const Index = () => {
             <div className="text-xs text-muted-foreground">Day Streak</div>
           </div>
         </div>
+        
+        {/* Daily Challenge */}
+        <DailyChallenge className="mb-6" onlyDaily={true} />
         
         {/* Milestone Banner */}
         <MilestoneBanner 

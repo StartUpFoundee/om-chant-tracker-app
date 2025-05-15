@@ -9,6 +9,7 @@ import Manual from "./pages/Manual";
 import Audio from "./pages/Audio";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
+import Challenges from "./pages/Challenges";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./components/theme-provider";
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/audio" element={<Audio />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/challenges" element={<Challenges />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
