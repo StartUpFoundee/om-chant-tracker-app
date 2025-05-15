@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,19 +13,42 @@ interface MantraCounterProps {
   target?: number;
   onComplete?: () => void;
   className?: string;
+  overrideCount?: number;
 }
 
 export function MantraCounter({
   autoIncrement = false,
   target = 108,
   onComplete,
-  className
+  className,
+  overrideCount
 }: MantraCounterProps) {
   const [count, setCount] = useState(0);
   const [mantraStats, setMantraStats] = useState(getMantraStats());
   const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
   const counterRef = useRef<HTMLDivElement>(null);
   const { toast: uiToast } = useToast();
+  const prevOverrideCountRef = useRef(overrideCount);
+  
+  // Use overrideCount if provided
+  useEffect(() => {
+    if (overrideCount !== undefined) {
+      setCount(overrideCount);
+      
+      // If overrideCount has increased, update stats
+      if (prevOverrideCountRef.current !== undefined && 
+          overrideCount > prevOverrideCountRef.current) {
+        const increment = overrideCount - prevOverrideCountRef.current;
+        const newStats = updateMantraCount(increment);
+        setMantraStats(newStats);
+        
+        // Add ripple effect from center
+        addRipple(50, 50);
+      }
+      
+      prevOverrideCountRef.current = overrideCount;
+    }
+  }, [overrideCount]);
   
   // Update stats on component mount
   useEffect(() => {
@@ -78,6 +102,10 @@ export function MantraCounter({
   
   // Handle counter increment
   const incrementCounter = (event?: React.MouseEvent) => {
+    if (overrideCount !== undefined) {
+      return; // Don't allow manual increment when using overrideCount
+    }
+    
     if (count >= target && target > 0) return;
     
     setCount(prev => prev + 1);

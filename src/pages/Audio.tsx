@@ -6,13 +6,14 @@ import { MantraCounter } from "@/components/MantraCounter";
 import { Mic, MicOff, ArrowLeft } from "lucide-react";
 import { AdContainer } from "@/components/AdContainer";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Audio = () => {
   const [isListening, setIsListening] = useState<boolean>(false);
   const [targetCount, setTargetCount] = useState<number>(108);
   const [speechRecognitionSupported, setSpeechRecognitionSupported] = useState<boolean>(false);
   const [lastSpeechTimestamp, setLastSpeechTimestamp] = useState<number>(0);
-  const [shouldIncrement, setShouldIncrement] = useState<boolean>(false);
+  const [count, setCount] = useState<number>(0);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const pauseTimeoutRef = useRef<number | null>(null);
   const navigate = useNavigate();
@@ -34,22 +35,33 @@ const Audio = () => {
           const now = Date.now();
           const pauseDuration = now - lastSpeechTimestamp;
           
-          // If we detect speech after a sufficient pause (500ms or more)
-          if (pauseDuration >= 500) {
-            setShouldIncrement(true);
-          }
-          
           // Update the last speech timestamp
           setLastSpeechTimestamp(now);
           
-          // Clear any existing pause timeout
-          if (pauseTimeoutRef.current) {
-            clearTimeout(pauseTimeoutRef.current);
+          // If last speech was more than 500ms ago, count as a new mantra
+          if (pauseDuration >= 500 && lastSpeechTimestamp !== 0) {
+            console.log("Mantra detected, incrementing count");
+            setCount(prevCount => {
+              const newCount = prevCount + 1;
+              // Check if we've reached the target
+              if (newCount === targetCount) {
+                toast.success(`You've completed ${targetCount} mantras!`);
+              }
+              return newCount;
+            });
           }
         };
         
         recognitionRef.current.onerror = (event: Event) => {
           console.error("Speech recognition error", event);
+          toast.error("Speech recognition error. Please try again.");
+        };
+
+        recognitionRef.current.onend = () => {
+          if (isListening) {
+            // If still listening but recognition ended, restart it
+            recognitionRef.current?.start();
+          }
         };
       }
     }
@@ -63,39 +75,22 @@ const Audio = () => {
         clearTimeout(pauseTimeoutRef.current);
       }
     };
-  }, []);
-  
-  // Handle pause detection for incrementing counter
-  useEffect(() => {
-    if (isListening) {
-      // Set up a recurring check for pauses
-      const intervalId = setInterval(() => {
-        const now = Date.now();
-        const timeSinceLastSpeech = now - lastSpeechTimestamp;
-        
-        // If there's been speech and then a pause of 500ms or more, count it as a mantra
-        if (lastSpeechTimestamp > 0 && timeSinceLastSpeech >= 500 && shouldIncrement) {
-          setShouldIncrement(false);
-        }
-      }, 100);
-      
-      return () => clearInterval(intervalId);
-    }
-  }, [isListening, lastSpeechTimestamp, shouldIncrement]);
+  }, [isListening]);
   
   const toggleListening = () => {
     if (isListening) {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
-      setShouldIncrement(false);
+      setIsListening(false);
     } else {
-      setLastSpeechTimestamp(0);
+      setLastSpeechTimestamp(0); // Reset the timestamp
       if (recognitionRef.current) {
         recognitionRef.current.start();
+        toast.info("Listening for mantras. Speak clearly with pauses between mantras.");
       }
+      setIsListening(true);
     }
-    setIsListening(!isListening);
   };
 
   return (
@@ -175,8 +170,9 @@ const Audio = () => {
             )}
             
             <MantraCounter 
-              autoIncrement={shouldIncrement} 
               target={targetCount}
+              overrideCount={count}
+              className="mt-4"
             />
             
             <div className="mt-6 text-center text-sm text-muted-foreground">
