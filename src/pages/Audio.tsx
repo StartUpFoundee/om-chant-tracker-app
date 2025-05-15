@@ -13,7 +13,7 @@ const Audio = () => {
   const [speechRecognitionSupported, setSpeechRecognitionSupported] = useState<boolean>(false);
   const [lastSpeechTimestamp, setLastSpeechTimestamp] = useState<number>(0);
   const [shouldIncrement, setShouldIncrement] = useState<boolean>(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const pauseTimeoutRef = useRef<number | null>(null);
   const navigate = useNavigate();
   
@@ -24,32 +24,34 @@ const Audio = () => {
     
     // Setup recognition instance
     if (supported) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
-      
-      recognitionRef.current.onresult = (event: any) => {
-        const now = Date.now();
-        const pauseDuration = now - lastSpeechTimestamp;
+      const SpeechRecognitionConstructor = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognitionConstructor) {
+        recognitionRef.current = new SpeechRecognitionConstructor();
+        recognitionRef.current.continuous = true;
+        recognitionRef.current.interimResults = true;
         
-        // If we detect speech after a sufficient pause (500ms or more)
-        if (pauseDuration >= 500) {
-          setShouldIncrement(true);
-        }
+        recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+          const now = Date.now();
+          const pauseDuration = now - lastSpeechTimestamp;
+          
+          // If we detect speech after a sufficient pause (500ms or more)
+          if (pauseDuration >= 500) {
+            setShouldIncrement(true);
+          }
+          
+          // Update the last speech timestamp
+          setLastSpeechTimestamp(now);
+          
+          // Clear any existing pause timeout
+          if (pauseTimeoutRef.current) {
+            clearTimeout(pauseTimeoutRef.current);
+          }
+        };
         
-        // Update the last speech timestamp
-        setLastSpeechTimestamp(now);
-        
-        // Clear any existing pause timeout
-        if (pauseTimeoutRef.current) {
-          clearTimeout(pauseTimeoutRef.current);
-        }
-      };
-      
-      recognitionRef.current.onerror = (event: any) => {
-        console.error("Speech recognition error", event.error);
-      };
+        recognitionRef.current.onerror = (event: Event) => {
+          console.error("Speech recognition error", event);
+        };
+      }
     }
     
     // Cleanup function
