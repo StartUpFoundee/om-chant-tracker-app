@@ -1,32 +1,118 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { MantraCounter } from "@/components/MantraCounter";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, ArrowLeft } from "lucide-react";
 import { AdContainer } from "@/components/AdContainer";
+import { useNavigate } from "react-router-dom";
 
 const Audio = () => {
   const [isListening, setIsListening] = useState<boolean>(false);
   const [targetCount, setTargetCount] = useState<number>(108);
   const [speechRecognitionSupported, setSpeechRecognitionSupported] = useState<boolean>(false);
+  const [lastSpeechTimestamp, setLastSpeechTimestamp] = useState<number>(0);
+  const [shouldIncrement, setShouldIncrement] = useState<boolean>(false);
+  const recognitionRef = useRef<any>(null);
+  const pauseTimeoutRef = useRef<number | null>(null);
+  const navigate = useNavigate();
   
   // Check for speech recognition support
   useEffect(() => {
     const supported = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
     setSpeechRecognitionSupported(supported);
+    
+    // Setup recognition instance
+    if (supported) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      
+      recognitionRef.current.onresult = (event: any) => {
+        const now = Date.now();
+        const pauseDuration = now - lastSpeechTimestamp;
+        
+        // If we detect speech after a sufficient pause (500ms or more)
+        if (pauseDuration >= 500) {
+          setShouldIncrement(true);
+        }
+        
+        // Update the last speech timestamp
+        setLastSpeechTimestamp(now);
+        
+        // Clear any existing pause timeout
+        if (pauseTimeoutRef.current) {
+          clearTimeout(pauseTimeoutRef.current);
+        }
+      };
+      
+      recognitionRef.current.onerror = (event: any) => {
+        console.error("Speech recognition error", event.error);
+      };
+    }
+    
+    // Cleanup function
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      if (pauseTimeoutRef.current) {
+        clearTimeout(pauseTimeoutRef.current);
+      }
+    };
   }, []);
   
+  // Handle pause detection for incrementing counter
+  useEffect(() => {
+    if (isListening) {
+      // Set up a recurring check for pauses
+      const intervalId = setInterval(() => {
+        const now = Date.now();
+        const timeSinceLastSpeech = now - lastSpeechTimestamp;
+        
+        // If there's been speech and then a pause of 500ms or more, count it as a mantra
+        if (lastSpeechTimestamp > 0 && timeSinceLastSpeech >= 500 && shouldIncrement) {
+          setShouldIncrement(false);
+        }
+      }, 100);
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [isListening, lastSpeechTimestamp, shouldIncrement]);
+  
   const toggleListening = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setShouldIncrement(false);
+    } else {
+      setLastSpeechTimestamp(0);
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+      }
+    }
     setIsListening(!isListening);
   };
 
   return (
     <div className="min-h-screen pb-20 pt-4">
-      <div className="container max-w-md px-4">
-        <h1 className="text-2xl font-bold text-center mt-4 mb-6">
-          Audio Counter
-        </h1>
+      <div className="container max-w-lg px-4">
+        <div className="flex items-center mb-2">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="mr-auto"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-2xl font-bold text-center mx-auto">
+            Audio Counter
+          </h1>
+          <div className="mr-auto w-9"></div>
+        </div>
         
         <AdContainer position="top" />
         
@@ -37,7 +123,7 @@ const Audio = () => {
               Your browser doesn't support speech recognition.
               Please try using Chrome or Edge for this feature.
             </p>
-            <Button onClick={() => window.history.back()}>Go Back</Button>
+            <Button onClick={() => navigate("/")}>Go Back</Button>
           </div>
         ) : (
           <>
@@ -87,7 +173,7 @@ const Audio = () => {
             )}
             
             <MantraCounter 
-              autoIncrement={isListening} 
+              autoIncrement={shouldIncrement} 
               target={targetCount}
             />
             

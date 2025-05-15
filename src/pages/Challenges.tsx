@@ -4,10 +4,13 @@ import { AdContainer } from "@/components/AdContainer";
 import { DailyChallenge } from "@/components/DailyChallenge";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarCheck, Award, Trophy } from "lucide-react";
+import { CalendarCheck, Award, Trophy, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Challenges = () => {
   const [completedChallenges, setCompletedChallenges] = useState(0);
+  const navigate = useNavigate();
   
   useEffect(() => {
     // Calculate completed challenges from localStorage
@@ -28,10 +31,21 @@ const Challenges = () => {
 
   return (
     <div className="min-h-screen pb-20 pt-4">
-      <div className="container max-w-md px-4">
-        <h1 className="text-2xl font-bold text-center mt-4 mb-6">
-          Spiritual Challenges
-        </h1>
+      <div className="container max-w-lg px-4">
+        <div className="flex items-center mb-2">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="mr-auto"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-2xl font-bold text-center mx-auto">
+            Spiritual Challenges
+          </h1>
+          <div className="mr-auto w-9"></div>
+        </div>
         
         <AdContainer position="top" />
         

@@ -6,6 +6,7 @@ import { UserProfile } from "@/components/profile/UserProfile";
 import { hasUserIdentity } from "@/lib/user-identity";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -14,9 +15,20 @@ const Profile = () => {
   return (
     <div className="min-h-screen pb-20 pt-4">
       <div className="container max-w-lg px-4">
-        <h1 className="text-2xl font-bold text-center mt-4 mb-6">
-          Your Spiritual Identity
-        </h1>
+        <div className="flex items-center mb-2">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="mr-auto"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-2xl font-bold text-center mx-auto">
+            Your Spiritual Identity
+          </h1>
+          <div className="mr-auto w-9"></div>
+        </div>
         
         <AdContainer position="top" />
         

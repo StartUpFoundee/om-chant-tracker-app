@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
@@ -6,11 +5,14 @@ import { MantraCounter } from "@/components/MantraCounter";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Input } from "@/components/ui/input";
 import { AdContainer } from "@/components/AdContainer";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Manual = () => {
   const [targetCount, setTargetCount] = useState<number>(108);
   const [customCount, setCustomCount] = useState<string>("108");
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
+  const navigate = useNavigate();
   
   const handleCustomCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomCount(e.target.value);
@@ -47,10 +49,21 @@ const Manual = () => {
 
   return (
     <div className="min-h-screen pb-20 pt-4">
-      <div className="container max-w-md px-4">
-        <h1 className="text-2xl font-bold text-center mt-4 mb-6">
-          Manual Counter
-        </h1>
+      <div className="container max-w-lg px-4">
+        <div className="flex items-center mb-2">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="mr-auto"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-2xl font-bold text-center mx-auto">
+            Manual Counter
+          </h1>
+          <div className="mr-auto w-9"></div>
+        </div>
         
         <AdContainer position="top" />
         

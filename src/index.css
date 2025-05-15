@@ -2,86 +2,74 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 20 14.3% 4.1%;
-
+    --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
- 
+    --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
- 
-    --primary: 24 9.8% 10%;
-    --primary-foreground: 60 9.1% 97.8%;
- 
-    --secondary: 60 4.8% 95.9%;
-    --secondary-foreground: 24 9.8% 10%;
- 
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
- 
-    --accent: 60 4.8% 95.9%;
-    --accent-foreground: 24 9.8% 10%;
- 
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
-
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-    --ring: 24 5.4% 63.9%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
     --radius: 0.5rem;
-    
-    --spiritual-gold: 36 60% 50%;
-    --spiritual-gold-foreground: 0 0% 100%;
+    --spiritual-gold: 45 100% 50%;
+    --spiritual-gold-foreground: 0 0% 0%;
   }
- 
+
   .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
- 
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
- 
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
- 
-    --primary: 60 9.1% 97.8%;
-    --primary-foreground: 24 9.8% 10%;
- 
-    --secondary: 12 6.5% 15.1%;
-    --secondary-foreground: 60 9.1% 97.8%;
- 
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
- 
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 60 9.1% 97.8%;
- 
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
- 
-    --border: 12 6.5% 15.1%;
-    --input: 12 6.5% 15.1%;
-    --ring: 24 5.7% 82.9%;
-    
-    --spiritual-gold: 36 70% 65%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --spiritual-gold: 45 100% 45%;
     --spiritual-gold-foreground: 0 0% 0%;
   }
 }
- 
+
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Add styles for ripple effect */
+/* Special Font for Sanskrit Text */
+.font-sanskrit {
+  font-family: 'Arial Unicode MS', 'Noto Sans', sans-serif;
+}
+
+/* Ripple Effect for Counter */
 .ripple-container {
   position: relative;
   overflow: hidden;
@@ -90,77 +78,68 @@
 .ripple {
   position: absolute;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.4);
   width: 100px;
   height: 100px;
   margin-top: -50px;
   margin-left: -50px;
   transform: scale(0);
-  opacity: 1;
+  animation: ripple-animation 700ms;
   pointer-events: none;
 }
 
-@keyframes ripple {
+@keyframes ripple-animation {
   to {
     transform: scale(4);
     opacity: 0;
   }
 }
 
-.animate-ripple {
-  animation: ripple 700ms linear;
+/* Om Symbol Styles */
+.om-symbol {
+  font-family: 'Arial Unicode MS', 'Noto Sans', sans-serif;
 }
 
+/* Gentle Pulse Animation */
 @keyframes pulse-gentle {
   0% {
-    opacity: 0.9;
+    transform: scaleY(0.7);
+    opacity: 0.6;
   }
   50% {
+    transform: scaleY(1);
     opacity: 1;
   }
   100% {
-    opacity: 0.9;
+    transform: scaleY(0.7);
+    opacity: 0.6;
   }
 }
 
 .animate-pulse-gentle {
-  animation: pulse-gentle 3s infinite ease-in-out;
+  animation: pulse-gentle 2s infinite ease-in-out;
 }
 
-/* Add Sanskrit font for mantras */
-@font-face {
-  font-family: 'Sanskrit';
-  src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-  font-weight: normal;
-  font-style: normal;
-}
-
-.font-sanskrit {
-  font-family: 'Sanskrit', serif;
-}
-
-/* Add styles for milestone achievement animation */
-@keyframes achievement-glow {
-  0% {
-    box-shadow: 0 0 5px 2px rgba(214, 158, 46, 0.3);
+/* Laptop screen optimization */
+@media (min-width: 1024px) {
+  .container.max-w-md {
+    max-width: 32rem; /* 512px */
   }
-  50% {
-    box-shadow: 0 0 15px 5px rgba(214, 158, 46, 0.6);
+  
+  .container.max-w-lg {
+    max-width: 48rem; /* 768px */
   }
-  100% {
-    box-shadow: 0 0 5px 2px rgba(214, 158, 46, 0.3);
+  
+  /* Center content in larger screens */
+  .min-h-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Ensure content doesn't get too wide */
+  .container {
+    width: 100%;
+    max-width: 1024px;
   }
 }
-
-.achievement-glow {
-  animation: achievement-glow 2s infinite ease-in-out;
-}
-
-/* Om symbol styles */
-.om-symbol {
-  display: inline-block;
-  font-size: 2em;
-  line-height: 1;
-  color: theme('colors.spiritual-gold.DEFAULT');
-}
-
