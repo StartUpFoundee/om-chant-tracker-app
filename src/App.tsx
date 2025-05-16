@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./components/theme-provider";
 import { initializeNotificationSystem } from "./lib/notification-system";
 import { soundPlayer } from "./lib/sound-system";
+import { ThemeToggleButton } from "./components/ThemeToggleButton";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,10 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<>
+                <ThemeToggleButton />
+                <Index />
+              </>} />
               <Route path="/manual" element={<Manual />} />
               <Route path="/audio" element={<Audio />} />
               <Route path="/dashboard" element={<Dashboard />} />
