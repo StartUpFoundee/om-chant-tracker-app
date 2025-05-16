@@ -12,6 +12,7 @@ import { MilestoneBanner } from "@/components/MilestoneBanner";
 import { MilestoneModal } from "@/components/MilestoneModal";
 import { DailyChallenge } from "@/components/DailyChallenge";
 import { getUserIdentity, hasUserIdentity, spiritualSymbols } from "@/lib/user-identity";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
   const [stats, setStats] = useState(getMantraStats());
@@ -33,6 +34,10 @@ const Index = () => {
   return (
     <div className="min-h-screen pb-20 pt-4">
       <div className="container max-w-lg px-4">
+        <div className="flex justify-end mb-2">
+          <ThemeToggle />
+        </div>
+        
         <AdContainer position="top" />
         
         {/* Header with Om Symbol */}

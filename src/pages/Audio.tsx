@@ -27,6 +27,7 @@ const Audio = () => {
   const [speechRecognitionSupported, setSpeechRecognitionSupported] = useState<boolean>(false);
   const [lastSpeechTimestamp, setLastSpeechTimestamp] = useState<number>(0);
   const [count, setCount] = useState<number>(0);
+  const [audioVisualization, setAudioVisualization] = useState<number[]>([]);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const pauseTimeoutRef = useRef<number | null>(null);
   const navigate = useNavigate();
@@ -72,6 +73,18 @@ const Audio = () => {
       }
     }
   }, [count, targetCount]);
+  
+  // Update audio visualization
+  useEffect(() => {
+    if (isListening) {
+      const intervalId = setInterval(() => {
+        const heights = Array.from({ length: 10 }, () => 20 + Math.random() * 60);
+        setAudioVisualization(heights);
+      }, 100);
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [isListening]);
   
   // Check for speech recognition support
   useEffect(() => {
@@ -143,7 +156,7 @@ const Audio = () => {
         clearTimeout(pauseTimeoutRef.current);
       }
     };
-  }, [isListening]);
+  }, [isListening, lastSpeechTimestamp]);
   
   const toggleListening = () => {
     if (isListening) {
@@ -247,24 +260,21 @@ const Audio = () => {
             
             <AdContainer position="middle" />
             
-            {/* Audio visualization (simplified) */}
+            {/* Audio visualization (enhanced) */}
             {isListening && (
               <div className="mb-8 flex justify-center">
                 <div className="flex items-end h-20 space-x-1">
-                  {Array.from({ length: 10 }).map((_, i) => {
-                    const height = 20 + Math.random() * 60;
-                    return (
-                      <div 
-                        key={i} 
-                        className="w-2 bg-spiritual-gold rounded-full"
-                        style={{ 
-                          height: `${height}%`,
-                          animationDelay: `${i * 0.1}s`,
-                          animation: 'pulse-gentle 0.5s ease-in-out infinite'
-                        }}
-                      />
-                    );
-                  })}
+                  {audioVisualization.map((height, i) => (
+                    <div 
+                      key={i} 
+                      className="w-2 bg-spiritual-gold rounded-full"
+                      style={{ 
+                        height: `${height}%`,
+                        animationDelay: `${i * 0.1}s`,
+                        animation: 'pulse-gentle 0.5s ease-in-out infinite'
+                      }}
+                    />
+                  ))}
                 </div>
               </div>
             )}

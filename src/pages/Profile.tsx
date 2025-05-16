@@ -6,11 +6,23 @@ import { UserProfile } from "@/components/profile/UserProfile";
 import { hasUserIdentity } from "@/lib/user-identity";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LogOut } from "lucide-react";
+import { toast } from "sonner";
 
 const Profile = () => {
   const navigate = useNavigate();
   const hasIdentity = hasUserIdentity();
+  
+  const handleLogout = () => {
+    // Clear relevant local storage
+    localStorage.removeItem('userIdentity');
+    
+    // Show toast notification
+    toast.success("You have been logged out successfully");
+    
+    // Navigate back to home page
+    navigate('/');
+  };
   
   return (
     <div className="min-h-screen pb-20 pt-4">
@@ -33,7 +45,20 @@ const Profile = () => {
         <AdContainer position="top" />
         
         {hasIdentity ? (
-          <UserProfile />
+          <>
+            <UserProfile />
+            
+            <div className="mt-6 flex justify-center">
+              <Button 
+                variant="destructive"
+                className="flex items-center"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-5 w-5 mr-2" />
+                Logout
+              </Button>
+            </div>
+          </>
         ) : (
           <Card className="p-6 text-center">
             <h3 className="text-lg font-medium mb-3">Create Your Spiritual Identity</h3>
