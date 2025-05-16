@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { NavBar } from "@/components/NavBar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +13,7 @@ import { AdContainer } from "@/components/AdContainer";
 import { hasUserIdentity } from "@/lib/user-identity";
 import { User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { NotificationSettings } from "@/components/notifications/NotificationSettings";
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
@@ -111,6 +111,9 @@ const Settings = () => {
             </p>
           </CardContent>
         </Card>
+        
+        {/* Notification Settings */}
+        <NotificationSettings />
         
         {/* Appearance Settings */}
         <Card className="mb-6">
@@ -226,6 +229,10 @@ const Settings = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="bowl" id="bowl" />
                   <Label htmlFor="bowl">Singing Bowl</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="chime" id="chime" />
+                  <Label htmlFor="chime">Chime</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="none" id="none-chime" />
