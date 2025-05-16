@@ -11,6 +11,8 @@ export interface NotificationPreferences {
   lastAsked?: number; // if pending, when we last asked
   messageIndex?: number; // rotate through message templates
   targetCount?: number; // User's target count for mantras
+  showDailyPermissionPopup?: boolean; // Whether to show daily permission popup
+  lastPermissionPopupDate?: string; // Date when the permission popup was last shown
 }
 
 // Default notification messages
@@ -48,7 +50,9 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
   reminderCount: 1,
   morningTime: "07:00",
   eveningTime: "19:00",
-  messageIndex: 0
+  messageIndex: 0,
+  showDailyPermissionPopup: true,
+  lastPermissionPopupDate: ""
 };
 
 // Get notification preferences from localStorage
@@ -76,12 +80,39 @@ export const requestNotificationPermission = async (): Promise<NotificationPermi
   
   try {
     const permission = await Notification.requestPermission();
-    saveNotificationPreferences({ status: permission as NotificationPermissionStatus });
+    saveNotificationPreferences({ 
+      status: permission as NotificationPermissionStatus,
+      lastAsked: Date.now() 
+    });
     return permission as NotificationPermissionStatus;
   } catch (error) {
     console.error("Error requesting notification permission:", error);
     return "denied";
   }
+};
+
+// Check if we should show the daily permission popup
+export const shouldShowDailyPermissionPopup = (): boolean => {
+  const prefs = getNotificationPreferences();
+  
+  // If permission already granted or popups are disabled, don't show
+  if (prefs.status === "granted" || prefs.showDailyPermissionPopup === false) {
+    return false;
+  }
+  
+  // Check if we've already shown the popup today
+  const today = new Date().toDateString();
+  if (prefs.lastPermissionPopupDate === today) {
+    return false;
+  }
+  
+  return prefs.status === "denied" || prefs.status === "pending";
+};
+
+// Mark that we've shown the permission popup today
+export const markPermissionPopupShown = () => {
+  const today = new Date().toDateString();
+  saveNotificationPreferences({ lastPermissionPopupDate: today });
 };
 
 // Send a test notification

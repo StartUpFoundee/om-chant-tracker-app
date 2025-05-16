@@ -41,6 +41,17 @@ export const NotificationSettings = () => {
     toast.success(`Notifications ${enabled ? 'enabled' : 'disabled'}`);
   };
   
+  // Toggle daily permission popup
+  const handleToggleDailyPopup = (enabled: boolean) => {
+    const updatedPrefs = saveNotificationPreferences({
+      showDailyPermissionPopup: enabled
+    });
+    setPreferences(updatedPrefs);
+    toast.success(enabled 
+      ? "Daily permission reminder enabled" 
+      : "Daily permission reminder disabled");
+  };
+  
   // Handle reminder count change
   const handleReminderCountChange = (value: string) => {
     const reminderCount = value === "2" ? 2 : 1;
@@ -78,6 +89,22 @@ export const NotificationSettings = () => {
           />
         </div>
         
+        {preferences.status !== "granted" && (
+          <div className="flex items-center justify-between">
+            <Label htmlFor="daily-popup">
+              Show daily permission reminder
+              <p className="text-xs text-muted-foreground mt-1">
+                If enabled, you'll be asked for notification permission once per day
+              </p>
+            </Label>
+            <Switch
+              id="daily-popup"
+              checked={preferences.showDailyPermissionPopup !== false}
+              onCheckedChange={handleToggleDailyPopup}
+            />
+          </div>
+        )}
+        
         {preferences.status === "granted" && (
           <>
             <div className="flex flex-col gap-2 pt-2">
@@ -105,8 +132,8 @@ export const NotificationSettings = () => {
               <Input
                 type="time"
                 id="morningTime"
-                min="04:00"
-                max="11:59"
+                min="00:01"
+                max="12:00"
                 value={preferences.morningTime || "07:00"}
                 onChange={(e) => handleTimeChange('morningTime', e.target.value)}
               />
@@ -118,8 +145,8 @@ export const NotificationSettings = () => {
                 <Input
                   type="time"
                   id="eveningTime"
-                  min="12:00"
-                  max="22:00"
+                  min="12:01"
+                  max="23:59"
                   value={preferences.eveningTime || "19:00"}
                   onChange={(e) => handleTimeChange('eveningTime', e.target.value)}
                 />

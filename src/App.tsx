@@ -18,6 +18,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { initializeNotificationSystem } from "./lib/notification-system";
 import { soundPlayer } from "./lib/sound-system";
 import { ThemeToggleButton } from "./components/ThemeToggleButton";
+import { DailyPermissionPopup } from "./components/notifications/DailyPermissionPopup";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
+          <DailyPermissionPopup />
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
